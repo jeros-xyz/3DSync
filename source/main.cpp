@@ -80,10 +80,10 @@ int main(int argc, char** argv){
     if(reader.ParseError() < 0){
         printf("Can't load configuration\n");
     } else {
-        std::string dropboxToken = reader.Get("Dropbox", "token", "");
+        std::string dropboxToken = reader.Get("Dropbox", "Token", "");
         
         if(dropboxToken != ""){
-            Dropbox dropbox(dropboxToken);
+            Dropbox dropbox(dropboxToken.c_str());
             std::map<std::string, std::string> values = reader.GetValues();
             std::map<std::pair<std::string, std::string>, std::vector<std::string>> paths;
             for(auto value : values){

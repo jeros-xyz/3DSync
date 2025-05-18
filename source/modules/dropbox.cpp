@@ -9,7 +9,7 @@ void Dropbox::upload(std::map<std::pair<std::string, std::string>, std::vector<s
         for(auto path : item.second){
             printf("Uploading %s\n", (item.first.first + path).c_str());
             FILE *file = fopen((item.first.first + path).c_str(), "rb");
-            std::string args("Dropbox-API-Arg: {\"path\":\"/" + item.first.second + path + "\",\"mode\": \"add\",\"mute\": false,\"strict_conflict\": false}");
+            std::string args("Dropbox-API-Arg: {\"autorename\": false, \"path\":\"/" + item.first.second + path + "\",\"mode\": \"add\",\"mute\": false,\"strict_conflict\": false}");
             std::string auth("Authorization: Bearer " + _token);
             struct curl_slist *headers = NULL;
             headers = curl_slist_append(headers, auth.c_str());
