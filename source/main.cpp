@@ -11,33 +11,15 @@
 
 #include "libs/inih/INIReader/INIReader.h"
 #include "modules/dropbox.h"
-
-
-std::vector<std::string> recurse_dir(std::string basepath, std::string additionalpath=""){
-    std::vector<std::string> paths;
-    DIR *dir;
-    struct dirent *ent;
-    std::string path(basepath + additionalpath);
-    if((dir = opendir(path.c_str())) != NULL){
-        while((ent = readdir(dir)) != NULL){
-            std::string readpath(path + "/" + ent->d_name);
-            std::vector<std::string> recurse = recurse_dir(basepath, additionalpath + "/" + ent->d_name);
-            paths.insert(paths.end(), recurse.begin(), recurse.end());
-        }
-    } else {
-        if(additionalpath != "") paths.push_back(additionalpath);
-        else printf("Folder %s not found\n", basepath.c_str());
-    }
-    closedir(dir);
-    return paths;
-}
+#include "features/uploader.h"
+#include "features/downloader.h"
 
 bool componentsInit(){
     bool result = true;
     gfxInitDefault();
 
     consoleInit(GFX_BOTTOM, NULL);
-    printf(CONSOLE_RED "\n 3DSync " VERSION_STRING " by Kyraminol" CONSOLE_RESET);
+    printf(CONSOLE_RED "\n 3DSync " VERSION_STRING " by Kyraminol feat. Jeros" CONSOLE_RESET);
     printf("\n\n\n\n\n\n  Sync your saves with another 3DS,\n   a PC or even a cloud.");
     printf("\n\n\n\n\n\n Commit: " CONSOLE_BLUE REVISION_STRING CONSOLE_RESET);
 
@@ -52,8 +34,8 @@ bool componentsInit(){
     acInit();
 
     u32* socketBuffer = (u32*)memalign(0x1000, 0x100000);
-    if(socketBuffer == NULL){printf("Failed to create socket buffer.\n"); result = false;}
-    if(socInit(socketBuffer, 0x100000)){printf("socInit failed.\n"); result = false;}
+    if(socketBuffer == NULL){printf("Failed to create socket buffer.\n\n"); result = false;}
+    if(socInit(socketBuffer, 0x100000)){printf("socInit failed.\n\n"); result = false;}
 
     httpcInit(0);
     sslcInit(0);
@@ -75,37 +57,43 @@ void componentsExit(){
 int main(int argc, char** argv){
     if(!componentsInit()) componentsExit();
 
-    INIReader reader("/3ds/3DSync/3DSync.ini");
-
-    if(reader.ParseError() < 0){
-        printf("Can't load configuration\n");
-    } else {
-        std::string dropboxToken = reader.Get("Dropbox", "Token", "");
-        
-        if(dropboxToken != ""){
-            Dropbox dropbox(dropboxToken.c_str());
-            std::map<std::string, std::string> values = reader.GetValues();
-            std::map<std::pair<std::string, std::string>, std::vector<std::string>> paths;
-            for(auto value : values){
-                if(value.first.rfind("paths=", 0) == 0){
-                    std::pair<std::string, std::string> key = std::make_pair(value.second, value.first.substr(6));
-                    paths[key] = recurse_dir(value.second);
-                }
-            }
-            if((int)paths.size() > 0) dropbox.upload(paths);
+    try {
+        //Init inputs values
+        INIReader reader("/3ds/3DSync/3DSync.ini");
+        if (reader.ParseError() < 0) {
+            throw "Can't load configuration\n";
         } else {
-            printf("Can't load Dropbox token from 3DSync.ini\n");
-        }
-    }
+            std::string authorizationCode = reader.Get("Dropbox", "AuthorizationCode", "false");
+            std::string refreshToken = reader.Get("Dropbox", "RefreshToken", "false");
+            std::map<std::string, std::string> values = reader.GetValues();
 
-    printf("\n\nPress START to exit...");
-    while (aptMainLoop()){
-        hidScanInput();
-        u32 kDown = hidKeysDown();
-        if (kDown & KEY_START) break;
-        gfxFlushBuffers();
-        gfxSwapBuffers();
-        gspWaitForVBlank();
+            if (!(((authorizationCode.length()) && (refreshToken.length()) && (values.size() > 0)))) {
+                throw "Configuration Missing\n";
+            }
+            
+            Dropbox * dropbox = new Dropbox(authorizationCode, refreshToken);            
+            dropbox->initDropbox();
+
+            Uploader * uploader = new Uploader(dropbox, values);
+            Downloader * downloader = new Downloader(dropbox);
+
+            printf("\nPress START to exit...\n");
+            printf("\n  Push A button to upload\n");
+            printf("\n  Push B button to Download\n\n");
+
+            while (aptMainLoop()){
+                hidScanInput();
+                u32 kDown = hidKeysDown();
+                if (kDown & KEY_START) break;
+                if (kDown & KEY_A) uploader->makeUpload();
+                if (kDown & KEY_B) downloader->makeDownload("", "/");
+                gfxFlushBuffers();
+                gfxSwapBuffers();
+                gspWaitForVBlank();
+            }
+        }
+    } catch (std::exception& e) {
+        printf(e.what());
     }
 
     componentsExit();
