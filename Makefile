@@ -28,9 +28,9 @@ VERSION_MINOR := $(word 2, $(VERSION_PARTS))
 VERSION_MICRO := $(word 3, $(VERSION_PARTS))
 
 DESCRIPTION := Sync your saves
-AUTHOR := Kyraminol feat.Jeros
+AUTHOR := Jeros feat. Kyraminol
 
-PRODUCT_CODE := CTR-K-SYNC
+PRODUCT_CODE := CTR-K-JSYNC
 UNIQUE_ID := 0xF5555
 
 BANNER_AUDIO := meta/audio_3ds.wav

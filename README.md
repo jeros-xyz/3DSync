@@ -1,24 +1,14 @@
-# 3DSync
+# SaveSync
 
 Homebrew for Nintendo 3DS/2DS console family that allows synchronization of saves and files to a cloud, to another console or to a PC
 
-Configurator has built-in support for Checkpoint and JKSM folders, but you can add custom one if you like
-
 Warning : Download only tranfert into /3ds folder of your Sd card
 
-**currently in early stage, supports only Dropbox to upload files**
-
-
-
-## Usage (old way)
-
-1. Follow steps on the [configurator page](https://kyraminol.github.io/3DSync/) to obtain the configuration file
-2. Place the configurator file in the following folder of the console SD card: `/3ds/3DSync/3DSync.ini`
-3. Download and install .cia file **or** run the .3dsx from the homebrew launcher
+**currently in beta, supports only Dropbox**
 
 ## Compilation of 3ds file for linux
 
-1. Install DevKitPro and submodule: 
+1. Install DevKitPro and submodule:
    1. Download and install kit : `wget https://apt.devkitpro.org/install-devkitpro-pacman && chmod +x ./install-devkitpro-pacman && sudo ./install-devkitpro-pacman`
    2. Install Submodule : `sudo dkp-pacman -S 3ds-curl`
    3. Install Submodule : `sudo dkp-pacman -S smdh`
