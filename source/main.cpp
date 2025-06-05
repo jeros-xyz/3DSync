@@ -19,7 +19,7 @@ bool componentsInit(){
     gfxInitDefault();
 
     consoleInit(GFX_BOTTOM, NULL);
-    printf(CONSOLE_RED "\n 3DSync " VERSION_STRING " by Kyraminol feat. Jeros" CONSOLE_RESET);
+    printf(CONSOLE_RED "\n SaveSync " VERSION_STRING " by Jeros feat. Kyraminol" CONSOLE_RESET);
     printf("\n\n\n\n\n\n  Sync your saves with another 3DS,\n   a PC or even a cloud.");
     printf("\n\n\n\n\n\n Commit: " CONSOLE_BLUE REVISION_STRING CONSOLE_RESET);
 
