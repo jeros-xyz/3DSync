@@ -13,7 +13,13 @@ LIBRARIES += curl mbedtls mbedx509 mbedcrypto z ctru m
 
 EXTRA_OUTPUT_FILES := 
 
-BUILD_FLAGS := -Wno-format-truncation -DVERSION_STRING="\"`git describe --tags --abbrev=0`\"" -DREVISION_STRING="\"`git rev-parse --short HEAD``git diff-index --quiet HEAD -- || echo ' (dirty)'`\""
+BUILD_FLAGS := -Wno-format-truncation \
+               -DVERSION_STRING="\"`git describe --tags --abbrev=0`\"" \
+               -DREVISION_STRING="\"`git rev-parse --short HEAD``git diff-index --quiet HEAD -- || echo ' (dirty)'`\"" \
+               -DAPP_PUBLIC_KEY=\"4t2c2oj5qd3nhb5\" \
+               -DAPP_SECRET_KEY=\"0w7oiwreapj31ys\"
+
+BUILD_FLAGS += $(USER_FLAGS)
 
 VERSION_PARTS := $(subst ., ,$(shell git describe --tags --abbrev=0))
 
@@ -22,7 +28,7 @@ VERSION_MINOR := $(word 2, $(VERSION_PARTS))
 VERSION_MICRO := $(word 3, $(VERSION_PARTS))
 
 DESCRIPTION := Sync your saves
-AUTHOR := Kyraminol
+AUTHOR := Kyraminol feat.Jeros
 
 PRODUCT_CODE := CTR-K-SYNC
 UNIQUE_ID := 0xF5555
