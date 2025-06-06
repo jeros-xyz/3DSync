@@ -51,4 +51,6 @@ void Downloader::makeDownload(const std::string& dropboxFolder, const std::strin
     }
     paths[std::make_pair(localFolder, dropboxFolder)] = relativeFiles;
     _dropbox->download(paths);
+
+    Frintf("Finish !!\n\n");
 }

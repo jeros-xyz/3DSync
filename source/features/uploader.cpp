@@ -43,5 +43,6 @@ void Uploader::makeUpload() {
         }
     }
     if((int)paths.size() > 0) _dropbox->upload2(paths);
+    Frintf("Finish !!\n\n");
 }
 
